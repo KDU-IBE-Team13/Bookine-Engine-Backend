@@ -1,6 +1,7 @@
 package com.example.ibeproject.controller;
 
 import com.example.ibeproject.dto.promocode.PromoCodeDTO;
+import com.example.ibeproject.exceptions.PromoCodeLoadException;
 import com.example.ibeproject.service.PromoCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +28,7 @@ public class PromoCodeController {
             @RequestParam String checkInDate,
             @RequestParam String checkOutDate,
             @RequestParam(defaultValue = "false") Boolean isDisabled
-    ) {
+    ) throws PromoCodeLoadException {
         List<PromoCodeDTO> applicablePromoCodes = promoCodeService.getApplicablePromoCodes(tenantId, propertyId, checkInDate, checkOutDate, isDisabled);
         return ResponseEntity.ok(applicablePromoCodes);
     }
