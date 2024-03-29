@@ -132,8 +132,6 @@ public class PromotionService {
                 promotionsList.removeIf(promotion -> promotion.getPromotionId() == 3);
             }
 
-            System.out.println(includesWeekend);
-
             List<PromotionDTO> promotionsListCopy = new ArrayList<>();
 
             for(PromotionDTO promotionEle: promotionsList)
@@ -145,7 +143,6 @@ public class PromotionService {
             }
 
             PromotionDTO highestPricePromotion = getHighestPriceFactorPromotion(promotionsListCopy);
-System.out.println("Highest price promotion: " + highestPricePromotion);
 
             PromotionResponseDTO promotionResponse = new PromotionResponseDTO();
             promotionResponse.setApplicablePromotions(promotionsListCopy);

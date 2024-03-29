@@ -23,7 +23,7 @@ public class PromoCodeController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> validatePromoCode(
+    public ResponseEntity<PromoCodeDTO> validatePromoCode(
             @RequestParam int tenantId,
             @RequestParam int propertyId,
             @RequestParam String checkInDate,
@@ -36,10 +36,10 @@ public class PromoCodeController {
         {
             if(promoCodeEle.getPromoCodeTitle().equals(promoCodeName))
             {
-                return ResponseEntity.ok(true);
+                return ResponseEntity.ok(promoCodeEle);
             }
         }
-        return ResponseEntity.ok(false);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
     @GetMapping(value = "/applicable-promo-codes", produces = MediaType.APPLICATION_JSON_VALUE)
