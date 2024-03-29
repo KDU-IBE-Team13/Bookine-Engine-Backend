@@ -48,3 +48,4 @@ application.properties
 .idea/
 
 !application.properties.sample
+src/main/resources/application.properties
