@@ -71,4 +71,35 @@ public class PromoCodeService {
                 LocalDate.now().isBefore(expirationDate) &&
                 checkIn.compareTo(checkOut) < 0;
     }
+
+
+    public PromoCodeDTO createPromoCode(PromoCodeDTO promoCodeDTO) throws PromoCodeLoadException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String insertQuery = "INSERT INTO promo_codes (promo_code_title, promo_code_description, discount_type, discount_value, minimum_purchase_amount, active, expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, promoCodeDTO.getPromoCodeTitle());
+                preparedStatement.setString(2, promoCodeDTO.getPromoCodeDescription());
+                preparedStatement.setString(3, promoCodeDTO.getDiscountType());
+                preparedStatement.setDouble(4, promoCodeDTO.getDiscountValue());
+                preparedStatement.setDouble(5, promoCodeDTO.getMinimumPurchaseAmount());
+                preparedStatement.setBoolean(6, promoCodeDTO.isActive());
+                preparedStatement.setString(7, promoCodeDTO.getExpirationDate());
+
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected == 1) {
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        long promoCodeId = generatedKeys.getLong(1);
+                        promoCodeDTO.setPromoCodeId(promoCodeId);
+                        return promoCodeDTO;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new PromoCodeLoadException("Failed to create promo code in the database", e);
+        }
+
+        throw new PromoCodeLoadException("Failed to create promo code. No rows affected.");
+    }
 }
