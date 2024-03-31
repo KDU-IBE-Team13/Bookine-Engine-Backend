@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.example.ibeproject.constants.RatingConstants;
 import com.example.ibeproject.dto.rating.RatingDTO;
 
 @Service
@@ -24,50 +25,17 @@ public class RatingService {
     @Value("${postgres.azure.db.password}")
     private String dbPassword;
 
-    public List<RatingDTO> getRatingsByRoomTypeId(int roomTypeId) throws SQLException {
-        List<RatingDTO> ratings = new ArrayList<>();
-
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM ratings WHERE room_type_id = ? AND property_id = 13")) {
-            preparedStatement.setInt(1, roomTypeId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    RatingDTO rating = new RatingDTO();
-                    rating.setRatingId(UUID.fromString(resultSet.getString("rating_id")));
-                    rating.setRoomTypeId(resultSet.getInt("room_type_id"));
-                    rating.setRating(resultSet.getInt("rating"));
-                    rating.setReview(resultSet.getString("review"));
-                    rating.setUserId(UUID.fromString(resultSet.getString("user_id")));
-                    ratings.add(rating);
-                }
-            }
-        }
-
-        return ratings;
-    }
-
-    public Double getAverageRatingByRoomTypeId(int roomTypeId) throws SQLException {
-        Double averageRating = null;
-
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT AVG(rating) AS avg_rating FROM ratings WHERE room_type_id = ? AND property_id = 13")) {
-            preparedStatement.setInt(1, roomTypeId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    averageRating = resultSet.getDouble("avg_rating");
-                }
-            }
-        }
-
-        return averageRating;
-    }
-
+    /* Retrieves average ratings for all room types.
+    *
+    * @return Map of room type IDs to average rating information.
+    * @throws SQLException if there's an issue retrieving average ratings from the database.
+    */
      public Map<Integer, Map<String, Double>> getAverageRatingsForAllRoomTypes() throws SQLException {
         Map<Integer, Map<String, Double>> averageRatings = new HashMap<>();
 
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT room_type_id, AVG(rating) AS avg_rating, COUNT(*) AS total_ratings FROM ratings WHERE property_id = 13 GROUP BY room_type_id")) {
+             ResultSet resultSet = statement.executeQuery(RatingConstants.GET_AVG_RATING_COUNT_QUERY)) {
 
             while (resultSet.next()) {
                 int roomTypeId = resultSet.getInt("room_type_id");
@@ -85,9 +53,16 @@ public class RatingService {
         return averageRatings;
     }
 
+    /**
+     * Creates a new rating.
+     *
+     * @param ratingDTO The RatingDTO object containing rating details.
+     * @return RatingDTO object representing the created rating.
+     * @throws SQLException if there's an issue creating the rating in the database.
+     */
     public RatingDTO createRating(RatingDTO ratingDTO) throws SQLException {
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-            String insertQuery = "INSERT INTO ratings (rating_id, room_type_id, rating, review, user_id, property_id) VALUES (?, ?, ?, ?, ?, 13)";
+            String insertQuery = RatingConstants.CREATE_RATING_QUERY;
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
                 UUID ratingId = UUID.randomUUID();

@@ -19,12 +19,28 @@ public class PromotionController {
         this.promotionService = promotionService;
     }
 
+    /**
+   * Endpoint to get all promotions.
+   *
+   * @return ResponseEntity containing a list of all PromotionDTO objects.
+   */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PromotionDTO>> getAllPromotions() {
         List<PromotionDTO> promotionDetails = promotionService.getAllPromotions();
         return ResponseEntity.ok(promotionDetails);
     }
 
+    /**
+   * Endpoint to get applicable promotions.
+   *
+   * @param tenantId           The ID of the tenant.
+   * @param propertyId         The ID of the property.
+   * @param checkInDate        The check-in date in YYYY-MM-DD format.
+   * @param checkOutDate       The check-out date in YYYY-MM-DD format.
+   * @param isSeniorCitizen    Flag indicating if the person is a senior citizen (default is false).
+   * @param isMilitaryPersonnel Flag indicating if the person is a military personnel (default is false).
+   * @return ResponseEntity containing the PromotionResponseDTO object with applicable promotions.
+   */
     @GetMapping(value="applicable-promos", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PromotionResponseDTO> getApplicablePromotions(
         @RequestParam int tenantId,

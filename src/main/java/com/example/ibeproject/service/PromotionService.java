@@ -37,6 +37,13 @@ public class PromotionService {
         this.restTemplate = restTemplate;
     }
 
+
+    /**
+     * Retrieves all promotions from the GraphQL server.
+     *
+     * @return List of PromotionDTO objects representing all promotions.
+     * @throws RoomDetailsNotFoundException if an error occurs while fetching promotions.
+     */
     public List<PromotionDTO> getAllPromotions() {
         HttpHeaders headers = HttpUtils.createHttpHeaders(apiKey);
         String requestBody = GraphQLRequestBodyUtils.buildQueryRequestBody(listPromotionsQuery);
@@ -65,7 +72,12 @@ public class PromotionService {
     }
 
 
-
+    /**
+     * Retrieves the promotion with the highest price factor from the given list of promotions.
+     *
+     * @param promotionsListCopy List of PromotionDTO objects to search for the highest price factor promotion.
+     * @return The PromotionDTO object with the highest price factor.
+     */
     public PromotionDTO getHighestPriceFactorPromotion(List<PromotionDTO> promotionsListCopy) {
         Optional<PromotionDTO> highestPricePromotion = promotionsListCopy.stream()
                 .max(Comparator.comparingDouble(PromotionDTO::getPriceFactor));
@@ -74,7 +86,18 @@ public class PromotionService {
     }
 
 
-
+    /**
+     * Retrieves applicable promotions based on tenant, property, dates, and eligibility criteria.
+     *
+     * @param tenantId          The ID of the tenant.
+     * @param propertyId        The ID of the property.
+     * @param checkInDate       The check-in date in YYYY-MM-DD format.
+     * @param checkOutDate      The check-out date in YYYY-MM-DD format.
+     * @param isSeniorCitizen   Flag indicating if the person is a senior citizen.
+     * @param isMilitaryPersonnel Flag indicating if the person is a military personnel.
+     * @return PromotionResponseDTO object containing applicable promotions and the best promotion.
+     * @throws RoomDetailsNotFoundException if an error occurs while fetching promotions.
+     */
     public PromotionResponseDTO getApplicablePromotions(int tenantId, int propertyId, String checkInDate, String checkOutDate, Boolean isSeniorCitizen, boolean isMilitaryPersonnel) {
         HttpHeaders headers = HttpUtils.createHttpHeaders(apiKey);
         String requestBody = GraphQLRequestBodyUtils.buildQueryRequestBody(listPromotionsQuery);

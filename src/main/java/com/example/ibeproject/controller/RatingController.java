@@ -23,16 +23,11 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @GetMapping(value="/{roomTypeId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<RatingDTO>> getRatingsByRoomTypeId(@PathVariable int roomTypeId) {
-        try {
-            List<RatingDTO> ratings = ratingService.getRatingsByRoomTypeId(roomTypeId);
-            return ResponseEntity.ok(ratings);
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
+    /**
+     * Retrieves average ratings for all room types.
+     *
+     * @return ResponseEntity containing a map of room type IDs to average rating details.
+     */
     @GetMapping(value="/average", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<Integer, Map<String, Double>>> getAverageRatingsForAllRoomTypes() {
         try {
@@ -43,6 +38,12 @@ public class RatingController {
         }
     }
 
+     /**
+     * Creates a new rating.
+     *
+     * @param ratingDTO The RatingDTO object containing rating details.
+     * @return ResponseEntity containing the created RatingDTO object.
+     */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RatingDTO> createRating(@RequestBody RatingDTO ratingDTO) {
         try {

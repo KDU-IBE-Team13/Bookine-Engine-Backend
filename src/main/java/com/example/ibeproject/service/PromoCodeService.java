@@ -1,5 +1,6 @@
 package com.example.ibeproject.service;
 
+import com.example.ibeproject.constants.PromoCodeConstants;
 import com.example.ibeproject.dto.promocode.PromoCodeDTO;
 import com.example.ibeproject.exceptions.PromoCodeLoadException;
 
@@ -22,8 +23,34 @@ public class PromoCodeService {
 
     @Value("${postgres.azure.db.password}")
     private String dbPassword;
+
+    @Value("${postgres.azure.db.url}")
+    public void setDbUrl(String dbUrl) {
+        this.dbUrl = dbUrl;
+    }
+
+    @Value("${postgres.azure.db.user}")
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    @Value("${postgres.azure.db.password}")
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
     
 
+    /**
+     * Retrieves applicable promo codes.
+     *
+     * @param tenantId      The ID of the tenant.
+     * @param propertyId    The ID of the property.
+     * @param checkInDate   The check-in date in YYYY-MM-DD format.
+     * @param checkOutDate  The check-out date in YYYY-MM-DD format.
+     * @param isDisabled    Flag indicating if disabled promo codes should be included.
+     * @return List of PromoCodeDTO objects representing applicable promo codes.
+     * @throws PromoCodeLoadException if an error occurs while fetching promo codes from the database.
+     */
     public List<PromoCodeDTO> getApplicablePromoCodes(int tenantId, int propertyId, String checkInDate, String checkOutDate, Boolean isDisabled) throws PromoCodeLoadException {
         String checkInDateSubstr = checkInDate.substring(0, 10);
         String checkOutDateSubstr = checkOutDate.substring(0, 10);
@@ -35,7 +62,7 @@ public class PromoCodeService {
 
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM promo_codes")) {
+             ResultSet resultSet = statement.executeQuery(PromoCodeConstants.GET_ALL_PROMO_CODES_QUERY)) {
 
                 while (resultSet.next()) {
                     PromoCodeDTO promoCode = new PromoCodeDTO();
@@ -64,6 +91,14 @@ public class PromoCodeService {
         return applicablePromoCodes;
     }
 
+    /**
+     * Checks if a promo code is applicable based on check-in, check-out dates, and expiration status.
+     *
+     * @param promoCode The PromoCodeDTO object to check.
+     * @param checkIn   The check-in date.
+     * @param checkOut  The check-out date.
+     * @return True if the promo code is applicable, false otherwise.
+     */
     private boolean isPromoCodeApplicable(PromoCodeDTO promoCode, LocalDate checkIn, LocalDate checkOut) {
         LocalDate expirationDate = LocalDate.parse(promoCode.getExpirationDate());
 
@@ -73,9 +108,16 @@ public class PromoCodeService {
     }
 
 
+    /**
+     * Creates a new promo code in the database.
+     *
+     * @param promoCodeDTO The PromoCodeDTO object containing promo code details.
+     * @return The created PromoCodeDTO object with assigned ID.
+     * @throws PromoCodeLoadException if an error occurs during promo code creation.
+     */
     public PromoCodeDTO createPromoCode(PromoCodeDTO promoCodeDTO) throws PromoCodeLoadException {
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-            String insertQuery = "INSERT INTO promo_codes (promo_code_title, promo_code_description, discount_type, discount_value, minimum_purchase_amount, active, expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String insertQuery = PromoCodeConstants.CREATE_PROMO_CODE_QUERY;
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, promoCodeDTO.getPromoCodeTitle());
