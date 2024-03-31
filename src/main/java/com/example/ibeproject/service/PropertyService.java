@@ -50,7 +50,7 @@ public class PropertyService {
         try {
             ResponseEntity<String> responseEntity = HttpUtils.makeHttpRequest(restTemplate, requestBody, headers, graphqlServerUrl);
             String responseBody = responseEntity.getBody();
-    
+
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(responseBody);
             JsonNode propertiesNode = root.path("data").path("listProperties");
@@ -62,7 +62,7 @@ public class PropertyService {
                 propertyDTO.setPropertyName(propertyNode.path("property_name").asText());
                 propertiesList.add(propertyDTO);
             }
-    
+            
             return propertiesList;
         } catch (IOException e) {
             throw new PropertyException("Error fetching properties: ", e);
