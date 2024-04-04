@@ -54,4 +54,16 @@ public class GraphQLConstants {
     public static final String LIST_AVAILABLE_ROOMS = 
     "{ \"query\": \"query MyQuery { listRoomAvailabilities(where: {property_id: {equals: %1$d}, property: {tenant_id: {equals: %2$d}}, date: {gte: \\\"%3$s\\\", lte: \\\"%4$s\\\"}, booking_id: {equals: 0}} take: 1000) { date room_id room { room_type { room_type_name } } } }\" }";
 
+
+    public static final String LIST_PROMOTIONS = "{ " +
+    "  listPromotions { " +
+    "    promotion_id " +
+    "    promotion_title " +
+    "    promotion_description " +
+    "    price_factor " +
+    "    minimum_days_of_stay " +
+    "    is_deactivated " +
+    "  } " +
+    "}";
+
 }

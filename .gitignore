@@ -42,7 +42,10 @@ secrets.yml
 .git-hooks/
 
 *.properties
+application.properties
+
 
 .idea/
 
 !application.properties.sample
+src/main/resources/application.properties

@@ -1,0 +1,23 @@
+[
+    {
+      "promoCodeId": 1,
+      "promoCodeTitle": "DISABILITY_CODE",
+      "promoCodeDescription": "Special discount for individuals with disabilities",
+      "discountType": "percentage",
+      "discountValue": 15,
+      "minimumPurchaseAmount": 0,
+      "active": true,
+      "expirationDate": "2024-12-31"
+    },
+    {
+      "promoCodeId": 2,
+      "promoCodeTitle": "DIWALI2024",
+      "promoCodeDescription": "Diwali 2024 promotional offer",
+      "discountType": "fixed",
+      "discountValue": 500,
+      "minimumPurchaseAmount": 2000,
+      "active": true,
+      "expirationDate": "2024-11-15"
+    }
+]
+  

@@ -43,7 +43,6 @@ class NightlyRateServiceTest {
         when(restTemplate.postForEntity(anyString(), any(), eq(String.class))).thenReturn(ResponseEntity.ok(responseBody));
 
         Map<String, Double> expectedRates = Collections.singletonMap("2024-03-17", 100.0);
-        System.out.println(expectedRates);
         Map<String, Double> actualRates = nightlyRateService.getMinimumNightlyRates(1, 10);
 
         verify(restTemplate, times(1)).postForEntity(anyString(), any(), eq(String.class));
