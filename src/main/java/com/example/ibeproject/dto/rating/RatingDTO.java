@@ -16,4 +16,6 @@ public class RatingDTO {
     private int rating;
     private String review;
     private UUID userId;
+    private String token;
+
 }

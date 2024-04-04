@@ -82,4 +82,48 @@ public class RatingService {
 
         throw new SQLException("Failed to create rating. No rows affected.");
     }
+
+    public boolean isValidToken(String token) {
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String query = "SELECT is_valid FROM tokens WHERE token_value = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, token);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        boolean isValid = resultSet.getBoolean("is_valid");
+                        return isValid;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+            return false;
+        }
+    }
+
+    /**
+     * Update token validity status in the database.
+     *
+     * @param tokenValue The value of the token to be updated.
+     * @param isValid    The new validity status (true or false).
+     * @throws SQLException if there's an issue updating the token validity status in the database.
+     */
+    public void updateTokenValidity(String tokenValue, boolean isValid) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String updateQuery = "UPDATE tokens SET is_valid = ? WHERE token_value = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setBoolean(1, isValid);
+                preparedStatement.setString(2, tokenValue);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected != 1) {
+                    throw new SQLException("Failed to update token validity status.");
+                }
+            }
+        }
+    }
 }
