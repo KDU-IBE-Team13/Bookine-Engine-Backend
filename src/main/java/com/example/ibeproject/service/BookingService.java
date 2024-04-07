@@ -2,7 +2,9 @@ package com.example.ibeproject.service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.coyote.BadRequestException;
@@ -26,6 +28,10 @@ public class BookingService {
 
     String updateRoomAvailability = GraphQLConstants.UPDATE_ROOM_AVAILABILITY;
 
+    String availableRoomsByRoomType = GraphQLConstants.ROOM_TYPE_AVAILABLE_ROOMS;
+
+    String availableRoomsByRoomId = GraphQLConstants.GET_AVAILABILITY_ID_BY_ROOM_ID;
+
     @Value("${graphql.connection.key}")
     private String apiKey;
 
@@ -37,6 +43,79 @@ public class BookingService {
     @Autowired
     public BookingService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    public List<Integer> getAvailableRoomDetails(String checkInDate, String checkOutDate, int roomTypeId,
+            int propertyId, int rooms) {
+        List<Integer> availableRooms = new ArrayList<>();
+        List<Integer> availabilityIds = new ArrayList<>();
+
+        HttpHeaders headers = HttpUtils.createHttpHeaders(apiKey);
+        String requestBody = String.format(availableRoomsByRoomType,
+                propertyId,
+                checkInDate,
+                checkOutDate,
+                roomTypeId);
+
+        try {
+            ResponseEntity<String> responseEntity = HttpUtils.makeHttpRequest(restTemplate, requestBody, headers,
+                    graphqlServerUrl);
+            String responseBody = responseEntity.getBody();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(responseBody);
+
+            JsonNode roomsNode = root.path("data").path("listRoomAvailabilities");
+
+            Map<Integer, Integer> roomCountMap = new HashMap<>();
+
+            for (JsonNode roomNode : roomsNode) {
+                int roomId = roomNode.path("room_id").asInt();
+                roomCountMap.put(roomId, roomCountMap.getOrDefault(roomId, 0) + 1);
+            }
+
+            int numberOfNights = (int) LocalDate.parse(checkOutDate.substring(0, 10)).toEpochDay()
+                    - (int) LocalDate.parse(checkInDate.substring(0, 10)).toEpochDay();
+
+            for (Map.Entry<Integer, Integer> entry : roomCountMap.entrySet()) {
+                int roomId = entry.getKey();
+                int availabilityCount = entry.getValue();
+                if (availabilityCount == numberOfNights) {
+                    availableRooms.add(roomId);
+                }
+            }
+        } catch (IOException e) {
+            throw new RoomDetailsNotFoundException("Error fetching Room Availability details: ", e);
+        }
+
+        if (availableRooms.size() < rooms) {
+            return availableRooms;
+        }
+        for (int i = 0; i < rooms; i++) {
+            String availableIdBody = String.format(availableRoomsByRoomId, propertyId, checkInDate, checkOutDate,
+                    availableRooms.get(i));
+
+            try {
+                ResponseEntity<String> responseEntity = HttpUtils.makeHttpRequest(restTemplate, availableIdBody,
+                        headers, graphqlServerUrl);
+                String responseBody = responseEntity.getBody();
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode root = objectMapper.readTree(responseBody);
+
+                JsonNode availabilityNodes = root.path("data").path("listRoomAvailabilities");
+
+                for (JsonNode availabilityNode : availabilityNodes) {
+                    int availabilityId = availabilityNode.path("availability_id").asInt();
+                    availabilityIds.add(availabilityId);
+                }
+            } catch (IOException e) {
+                throw new RoomDetailsNotFoundException(
+                        "Error fetching availability IDs for room IDs: " + availableRooms, e);
+            }
+
+        }
+
+        return availabilityIds;
     }
 
     public Integer createBooking(String checkInDate, String checkOutDate, int adultCount, int childCount,
@@ -52,8 +131,7 @@ public class BookingService {
                 promotionId,
                 propertyId,
                 1);
-        // System.out.println(createBooking);
-        // System.out.println(requestBody);
+
         try {
             ResponseEntity<String> responseEntity = HttpUtils.makeHttpRequest(restTemplate, requestBody, headers,
                     graphqlServerUrl);
@@ -70,11 +148,11 @@ public class BookingService {
         }
     }
 
-    public Integer updateRoomAvailabilities(int[] roomAvailabilities, int bookingId) {
+    public Integer updateRoomAvailabilities(List<Integer> roomAvailabilities, int bookingId, int rooms) {
         HttpHeaders headers = HttpUtils.createHttpHeaders(apiKey);
-
-        for (int i = 0; i < roomAvailabilities.length; i++) {
-            String requestBody = String.format(updateRoomAvailability, roomAvailabilities[i], bookingId);
+        System.out.println("ffffffffffffffffffffffffffffffffff" + rooms);
+        for (int i = 0; i < roomAvailabilities.size(); i++) {
+            String requestBody = String.format(updateRoomAvailability, roomAvailabilities.get(i), bookingId);
 
             try {
                 ResponseEntity<String> responseEntity = HttpUtils.makeHttpRequest(restTemplate, requestBody, headers,
@@ -96,9 +174,9 @@ public class BookingService {
 
                 int availabilityId = bookingNode.path("availability_id").asInt();
 
-                if (availabilityId != roomAvailabilities[i]) {
+                if (availabilityId != roomAvailabilities.get(i)) {
                     throw new BadRequestException(
-                            "Mismatch in availability ID for room: " + roomAvailabilities[i]);
+                            "Mismatch in availability ID for room: " + roomAvailabilities.get(i));
                 }
 
             } catch (IOException e) {
@@ -107,7 +185,7 @@ public class BookingService {
             }
         }
 
-        return roomAvailabilities.length;
+        return rooms;
 
     }
 
