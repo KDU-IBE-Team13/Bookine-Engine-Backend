@@ -150,7 +150,6 @@ public class BookingService {
 
     public Integer updateRoomAvailabilities(List<Integer> roomAvailabilities, int bookingId, int rooms) {
         HttpHeaders headers = HttpUtils.createHttpHeaders(apiKey);
-        System.out.println("ffffffffffffffffffffffffffffffffff" + rooms);
         for (int i = 0; i < roomAvailabilities.size(); i++) {
             String requestBody = String.format(updateRoomAvailability, roomAvailabilities.get(i), bookingId);
 
