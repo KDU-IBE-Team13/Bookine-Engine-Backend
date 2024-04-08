@@ -57,7 +57,7 @@ public class BookingServiceConcurrencyTest {
     private BookingRequestDTO createBookingRequest() {
         LocalDate checkInDate = LocalDate.now().plusDays((int) (Math.random() * 10)); 
         LocalDate checkOutDate = checkInDate.plusDays((int) (Math.random() * 10)); 
-        int roomTypeId = 77; 
+        int roomTypeId = 73; 
         int numRooms = 1;
 
         return new BookingRequestDTO(checkInDate, checkOutDate, roomTypeId, numRooms);

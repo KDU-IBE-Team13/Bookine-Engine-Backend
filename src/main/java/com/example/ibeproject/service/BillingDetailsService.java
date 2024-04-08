@@ -78,5 +78,15 @@ public class BillingDetailsService {
         return null;
     }
     
+    public boolean deleteBillingDetailsByBillingId(String billingId) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String deleteQuery = "DELETE FROM billingdetails WHERE billing_id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+                preparedStatement.setObject(1, UUID.fromString(billingId));
+                int rowsAffected = preparedStatement.executeUpdate();
+                return rowsAffected > 0;
+            }
+        }
+    }
 
 }
