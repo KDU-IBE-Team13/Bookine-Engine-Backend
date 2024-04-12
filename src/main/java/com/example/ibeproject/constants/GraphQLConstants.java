@@ -65,14 +65,13 @@ public class GraphQLConstants {
                         "  } " +
                         "}";
 
+        public static final String CREATE_BOOKINGS = "{ \"query\": \"mutation MyMutation { createBooking(data: { check_in_date: \\\"%1$s\\\", check_out_date: \\\"%2$s\\\", adult_count: %3$d, child_count: %4$d, total_cost: %5$d, amount_due_at_resort: %6$d, guest: {create: {guest_name: \\\"%7$s\\\"}}, promotion_applied: {connect: {promotion_id: %8$d}}, property_booked: {connect: {property_id: %9$d}}, booking_status: {connect: {status_id: %10$d}}}) { booking_id } }\" }";
 
-        public static final String CREATE_BOOKINGS =    "{ \"query\": \"mutation MyMutation { createBooking(data: { check_in_date: \\\"%1$s\\\", check_out_date: \\\"%2$s\\\", adult_count: %3$d, child_count: %4$d, total_cost: %5$d, amount_due_at_resort: %6$d, guest: {create: {guest_name: \\\"%7$s\\\"}}, promotion_applied: {connect: {promotion_id: %8$d}}, property_booked: {connect: {property_id: %9$d}}, booking_status: {connect: {status_id: %10$d}}}) { booking_id } }\" }";
-
-        public static final String UPDATE_ROOM_AVAILABILITY =  "{ \"query\": \"mutation MyMutation2 { updateRoomAvailability( where: {availability_id: %1$d} data: { booking: {connect: {booking_id: %2$d}}}) {availability_id, booking_id, date}}\"}";
+        public static final String UPDATE_ROOM_AVAILABILITY = "{ \"query\": \"mutation MyMutation2 { updateRoomAvailability( where: {availability_id: %1$d} data: { booking: {connect: {booking_id: %2$d}}}) {availability_id, booking_id, date}}\"}";
 
         public static final String ROOM_TYPE_AVAILABLE_ROOMS = "{ \"query\": \"query MyQuery { listRoomAvailabilities(where: {property_id: {equals: %1$d}, date: {gte: \\\"%2$s\\\", lt: \\\"%3$s\\\"}, room: {room_type_id: {equals: %4$d}}, booking_id: {equals: 0}} take: 1000) { room_id } }\" }";
 
         public static final String GET_AVAILABILITY_ID_BY_ROOM_ID = "{ \"query\": \"query MyQuery { listRoomAvailabilities(where: {date: {gte: \\\"%2$s\\\", lt: \\\"%3$s\\\"}, room_id: {equals: %4$d}, property_id: {equals: %1$d}}) { availability_id } }\" }";
 
-
+        public static final String LIST_ROOM_RATE_IN_A_RANGE = "{ \"query\": \"query MyQuery { listRoomRateRoomTypeMappings(where: {room_type: {property_of: {tenant_id: {equals: %1$d}}, property_id: {equals: %2$d}, room_type_id: {equals: %3$d}}, room_rate: {date: {gte: \\\"%4$s\\\", lt: \\\"%5$s\\\"}}}) { room_rate { basic_nightly_rate date } room_type { room_type_name } } }\" }";
 }
