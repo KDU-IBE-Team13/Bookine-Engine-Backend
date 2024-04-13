@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.ibeproject.constants.BookingConstants;
 import com.example.ibeproject.dto.billingDetails.BillingDetailsDTO;
+import com.example.ibeproject.mapper.BillingDetailsMapper;
 
 @Service
 public class BillingDetailsService {
@@ -21,7 +22,9 @@ public class BillingDetailsService {
     @Value("${postgres.azure.db.password}")
     private String dbPassword;
 
-     public BillingDetailsDTO addDetails(BillingDetailsDTO billingDetailsDTO) throws SQLException {
+    private final BillingDetailsMapper billingDetailsMapper = new BillingDetailsMapper();
+
+    public BillingDetailsDTO addDetails(BillingDetailsDTO billingDetailsDTO) throws SQLException {
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
             String insertQuery = BookingConstants.INSERT_CHECKOUT_DETAILS_QUERY;
 
@@ -47,7 +50,6 @@ public class BillingDetailsService {
                 preparedStatement.setString(18, billingDetailsDTO.getTravelerLastName());
                 preparedStatement.setString(19, billingDetailsDTO.getTravelerPhone());
                 preparedStatement.setInt(20, billingDetailsDTO.getZip());
-             
 
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected == 1) {
@@ -58,6 +60,34 @@ public class BillingDetailsService {
         }
 
         throw new SQLException("Failed to add data. No rows affected.");
+    }
+
+    public BillingDetailsDTO getDetailsById(UUID billingId) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String selectQuery = BookingConstants.GET_CHECKOUT_DETAILS_BY_ID_QUERY_ALT;
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+                preparedStatement.setObject(1, billingId);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return billingDetailsMapper.mapResultSetToBillingDetailsDTO(resultSet);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean deleteBillingDetailsByBillingId(String billingId) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String deleteQuery = "DELETE FROM billings_alt WHERE billing_id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+                preparedStatement.setObject(1, UUID.fromString(billingId));
+                int rowsAffected = preparedStatement.executeUpdate();
+                return rowsAffected > 0;
+            }
+        }
     }
 
 }

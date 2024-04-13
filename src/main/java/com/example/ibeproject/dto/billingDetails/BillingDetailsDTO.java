@@ -30,4 +30,21 @@ public class BillingDetailsDTO {
     private String travelerLastName;
     private String travelerPhone;
     private int zip;
+
+    private String roomId;
+    private String roomTypeName;
+    private String checkInDate;
+    private String checkOutDate;
+    private double averagePrice;
+    private double subTotal;
+    private double taxes;
+    private double vat;
+    private double packageTotal;
+
+    private int adultCount;
+    private int teenCount;
+    private int kidCount;
+    private String promotionTitle;
+    private String promotionDescription;
+    
 }

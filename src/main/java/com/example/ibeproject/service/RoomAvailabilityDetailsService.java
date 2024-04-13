@@ -122,9 +122,7 @@ public class RoomAvailabilityDetailsService {
                 } else {
                         responseDTO.setRoomsDetails(Collections.emptyList());
                 }
-
-                // List<RoomDetailsPricesDTO> list = responseDTO.getRoomsDetails();
-                // responseDTO.setResponseLength(list.size());
+                
                 return responseDTO;
         }
 

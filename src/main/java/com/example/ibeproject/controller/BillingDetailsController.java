@@ -35,4 +35,19 @@ public class BillingDetailsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping(value = "/{billingId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BillingDetailsDTO> getBillingDetailsById(@PathVariable UUID billingId) {
+        try {
+            BillingDetailsDTO billingDetailsDTO = billingDetailsService.getDetailsById(billingId);
+            if (billingDetailsDTO != null) {
+                return ResponseEntity.ok(billingDetailsDTO);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
