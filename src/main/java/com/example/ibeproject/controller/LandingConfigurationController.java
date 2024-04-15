@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ibeproject.dto.landing.LandingConfigDTO;
 import com.example.ibeproject.service.LandingConfigService;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @RestController
 @RequestMapping("/api/v1/configuration/landing-page")
 public class LandingConfigurationController {
@@ -19,10 +22,6 @@ public class LandingConfigurationController {
     private final LandingConfigService landingConfigService;
     private final String landingConfigAzureFilePath;
 
-    /**
-     * @param landingConfigService The service for managing landing page configurations.
-     * @param landingConfigAzureFilePath The file path for storing landing page configuration data in Azure Blob Storage.
-     */
     public LandingConfigurationController(
         LandingConfigService landingConfigService,
         @Value("${config.landing.azure.file.path}") String landingConfigAzureFilePath
@@ -31,25 +30,17 @@ public class LandingConfigurationController {
         this.landingConfigAzureFilePath = landingConfigAzureFilePath;
     }
 
-    /**
-     * Retrieves the current landing page configuration.
-     * @return ResponseEntity containing the landing page configuration data.
-     */
+    @Cacheable(value = "landingPageConfigCache", key = "#root.methodName")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LandingConfigDTO> getLandingPageConfig() {
         LandingConfigDTO config = landingConfigService.loadConfigFromAzureBlob(landingConfigAzureFilePath);
         return ResponseEntity.ok(config);
     }
 
-    /**
-     * Updates the landing page configuration.
-     * @param updatedConfig The updated landing page configuration.
-     * @return ResponseEntity indicating the success of the update operation.
-     */
+    @CacheEvict(value = "landingPageConfigCache", allEntries = true)
     @PutMapping
     public ResponseEntity<String> updateLandingPageConfig(@RequestBody LandingConfigDTO updatedConfig) {
         landingConfigService.writeConfigToAzureBlob(updatedConfig, landingConfigAzureFilePath);
         return ResponseEntity.ok("Landing page config updated successfully");
     }
-
 }
