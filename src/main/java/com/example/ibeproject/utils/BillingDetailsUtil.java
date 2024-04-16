@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class BillingDetailsUtil {
-    
+
 
     public static void setPreparedStatementParameters(PreparedStatement preparedStatement, BillingDetailsDTO billingDetailsDTO) throws SQLException {
         preparedStatement.setBoolean(2, billingDetailsDTO.isAgreeToTerms());
@@ -29,6 +29,7 @@ public class BillingDetailsUtil {
         preparedStatement.setString(19, billingDetailsDTO.getTravelerPhone());
         preparedStatement.setInt(20, billingDetailsDTO.getZip());
 
+
         preparedStatement.setString(21, billingDetailsDTO.getRoomId());
         preparedStatement.setString(22, billingDetailsDTO.getRoomTypeName());
         preparedStatement.setString(23, billingDetailsDTO.getCheckInDate());
@@ -44,6 +45,9 @@ public class BillingDetailsUtil {
         preparedStatement.setInt(32, billingDetailsDTO.getKidCount());
         preparedStatement.setString(33, billingDetailsDTO.getPromotionTitle());
         preparedStatement.setString(34, billingDetailsDTO.getPromotionDescription());
+
+    }
+}
 
     }
 }

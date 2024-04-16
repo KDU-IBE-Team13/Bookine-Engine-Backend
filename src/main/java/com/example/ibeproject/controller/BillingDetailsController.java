@@ -26,6 +26,12 @@ public class BillingDetailsController {
         this.billingDetailsService = billingDetailsService;
     }
 
+    /**
+     * Creates a new billing detail.
+     *
+     * @param billingDetailsDTO The DTO containing billing details to be created.
+     * @return ResponseEntity containing the created billing details or an error response.
+     */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BillingDetailsDTO> createRating(@RequestBody BillingDetailsDTO billingDetailsDTO) {
         try {
@@ -35,6 +41,14 @@ public class BillingDetailsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
+    /**
+     * Retrieves billing details by ID.
+     *
+     * @param billingId The unique identifier of the billing details to retrieve.
+     * @return ResponseEntity containing the billing details or an error response.
+     */
 
     @GetMapping(value = "/{billingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BillingDetailsDTO> getBillingDetailsById(@PathVariable UUID billingId) {
@@ -50,4 +64,5 @@ public class BillingDetailsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }
