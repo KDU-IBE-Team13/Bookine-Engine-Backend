@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ibeproject.dto.footer.FooterConfigDTO;
 import com.example.ibeproject.service.FooterConfigService;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @RestController
 @RequestMapping("/api/v1/configuration/footer")
 public class FooterConfigurationController {
@@ -19,10 +22,6 @@ public class FooterConfigurationController {
     private final FooterConfigService footerConfigService;
     private final String footerConfigAzureFilePath;
 
-    /**.
-     * @param footerConfigService The service for managing footer configuration
-     * @param footerConfigAzureFilePath The file path for storing footer configuration data in Azure Blob Storage.
-     */
     public FooterConfigurationController(
         FooterConfigService footerConfigService,
         @Value("${config.footer.azure.file.path}") String footerConfigAzureFilePath
@@ -31,21 +30,14 @@ public class FooterConfigurationController {
         this.footerConfigAzureFilePath = footerConfigAzureFilePath;
     }
     
-    /**
-     * Retrieves the current footer configuration from the blob file
-     * @return ResponseEntity containing the footer configuration data.
-     */
+    @Cacheable(value = "footerConfigCache", key = "#root.methodName")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FooterConfigDTO> getFooterConfig() {
         FooterConfigDTO config = footerConfigService.loadConfigFromAzureBlob(footerConfigAzureFilePath);
         return ResponseEntity.ok(config);
     }
 
-    /**
-     * Updates the footer configuration in the blob file
-     * @param updatedConfig The updated footer configuration.
-     * @return ResponseEntity indicating the success of the update operation.
-     */
+    @CacheEvict(value = "footerConfigCache", allEntries = true)
     @PutMapping
     public ResponseEntity<String> updateFooterConfig(@RequestBody FooterConfigDTO updatedConfig) {
         footerConfigService.writeConfigToAzureBlob(updatedConfig, footerConfigAzureFilePath);

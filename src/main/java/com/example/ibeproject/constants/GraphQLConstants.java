@@ -44,7 +44,7 @@ public class GraphQLConstants {
                         "}";
 
         public static final String LIST_ROOM_RATE_ROOM_TYPE_MAPPINGS = "{" +
-                        "\"query\": \"query MyQuery { listRoomRateRoomTypeMappings(where: {room_rate: {date: {gte: \\\"%3$s\\\", lte: \\\"%4$s\\\"}},"
+                        "\"query\": \"query MyQuery { listRoomRateRoomTypeMappings(where: {room_rate: {date: {gte: \\\"%3$s\\\", lt: \\\"%4$s\\\"}},"
                         +
                         "room_type: {property_id: {equals: %1$d}," +
                         "property_of: {tenant_id: {equals: %2$d}}}} take: 1000) { room_rate { basic_nightly_rate date }"
@@ -52,7 +52,7 @@ public class GraphQLConstants {
                         "room_type { room_type_name room_type_id } } }\""
                         + "}";
 
-        public static final String LIST_AVAILABLE_ROOMS = "{ \"query\": \"query MyQuery { listRoomAvailabilities(where: {property_id: {equals: %1$d}, property: {tenant_id: {equals: %2$d}}, date: {gte: \\\"%3$s\\\", lte: \\\"%4$s\\\"}, booking_id: {equals: 0}} take: 1000) { date room_id room { room_type { room_type_name } } } }\" }";
+        public static final String LIST_AVAILABLE_ROOMS = "{ \"query\": \"query MyQuery { listRoomAvailabilities(where: {property_id: {equals: %1$d}, property: {tenant_id: {equals: %2$d}}, date: {gte: \\\"%3$s\\\", lt: \\\"%4$s\\\"}, booking_id: {equals: 0}} take: 1000) { date room_id room { room_type { room_type_name } } } }\" }";
 
         public static final String LIST_PROMOTIONS = "{ " +
                         "  listPromotions { " +

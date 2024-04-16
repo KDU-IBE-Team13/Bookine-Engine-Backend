@@ -63,7 +63,7 @@ public class RoomAvailabilityService {
             }
 
             int numberOfNights = (int) LocalDate.parse(checkOutDate.substring(0, 10)).toEpochDay()
-                    - (int) LocalDate.parse(checkInDate.substring(0, 10)).toEpochDay();
+                    - (int) LocalDate.parse(checkInDate.substring(0, 10)).toEpochDay() -1;
 
             for (Integer roomId : roomCountMap.keySet()) {
                 int roomCount = roomCountMap.get(roomId);

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ibeproject.dto.header.HeaderConfigDTO;
 import com.example.ibeproject.service.HeaderConfigService;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @RestController
 @RequestMapping("/api/v1/configuration/header")
 public class HeaderConfigurationController {
@@ -19,10 +22,6 @@ public class HeaderConfigurationController {
     private final HeaderConfigService headerConfigService;
     private final String headerConfigAzureFilePath;
 
-    /**
-     * @param headerConfigService The service for managing header configurations.
-     * @param headerConfigAzureFilePath The file path for storing header configuration data in Azure Blob Storage.
-     */
     public HeaderConfigurationController(
         HeaderConfigService headerConfigService,
         @Value("${config.header.azure.file.path}") String headerConfigAzureFilePath
@@ -30,22 +29,15 @@ public class HeaderConfigurationController {
         this.headerConfigService = headerConfigService;
         this.headerConfigAzureFilePath = headerConfigAzureFilePath;
     }
-
-    /**
-     * Retrieves the current header configuration.
-     * @return ResponseEntity containing the header configuration data.
-     */
+    
+    @Cacheable(value = "headerConfigCache", key = "#root.methodName")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HeaderConfigDTO> getHeaderConfig() {
         HeaderConfigDTO config = headerConfigService.loadConfigFromAzureBlob(headerConfigAzureFilePath);
         return ResponseEntity.ok(config);
     }
 
-    /**
-     * Updates the header configuration.
-     * @param updatedConfig The updated header configuration.
-     * @return ResponseEntity indicating the success of the update operation.
-     */
+    @CacheEvict(value = "headerConfigCache", allEntries = true)
     @PutMapping
     public ResponseEntity<String> updateHeaderConfig(@RequestBody HeaderConfigDTO updatedConfig) {
         headerConfigService.writeConfigToAzureBlob(updatedConfig, headerConfigAzureFilePath);
