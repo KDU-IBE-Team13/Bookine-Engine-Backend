@@ -11,4 +11,8 @@ public class BookingConstants {
     public static final String GET_CHECKOUT_DETAILS_QUERY_ALT = "SELECT * FROM billings_alt"; 
     public static final String GET_CHECKOUT_DETAILS_BY_ID_QUERY_ALT = "SELECT * FROM billings_alt WHERE billing_id = ?";
     public static final String GET_BOOKINGS_BY_EMAIL  = "SELECT * FROM billings_alt where billing_email = ?";
+
+    public static final String SELECT_ROOM_AVAILABILITY_CONC_QUERY = "SELECT available_rooms FROM room_availability_demo WHERE room_type_id = ? FOR UPDATE";
+    public static final String UPDATE_ROOM_AVAILABILITY_CONC_QUERY = "UPDATE room_availability_demo SET available_rooms = available_rooms - ? WHERE room_type_id = ?";
+    public static final String INSERT_BOOKING_CONC_QUERY = "INSERT INTO bookings_demo (check_in_date, check_out_date, room_type_id, num_rooms) VALUES (?, ?, ?, ?)";
 }

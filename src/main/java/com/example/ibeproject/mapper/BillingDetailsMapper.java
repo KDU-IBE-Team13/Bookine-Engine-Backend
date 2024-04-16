@@ -39,6 +39,7 @@ public class BillingDetailsMapper {
         billingDetailsDTO.setZip(resultSet.getInt("zip"));
 
 
+
         billingDetailsDTO.setRoomId(resultSet.getString("room_id"));
         billingDetailsDTO.setRoomTypeName(resultSet.getString("room_type_name"));
         billingDetailsDTO.setCheckInDate(resultSet.getString("check_in_date"));
@@ -54,6 +55,7 @@ public class BillingDetailsMapper {
         billingDetailsDTO.setKidCount(resultSet.getInt("kid_count"));
         billingDetailsDTO.setPromotionTitle(resultSet.getString("promotion_title"));
         billingDetailsDTO.setPromotionDescription(resultSet.getString("promotion_description"));
+
 
         return billingDetailsDTO;
     }
