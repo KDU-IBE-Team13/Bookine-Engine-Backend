@@ -37,6 +37,26 @@ public class BillingDetailsMapper {
         billingDetailsDTO.setTravelerLastName(resultSet.getString("traveler_last_name"));
         billingDetailsDTO.setTravelerPhone(resultSet.getString("traveler_phone"));
         billingDetailsDTO.setZip(resultSet.getInt("zip"));
+
+
+
+        billingDetailsDTO.setRoomId(resultSet.getString("room_id"));
+        billingDetailsDTO.setRoomTypeName(resultSet.getString("room_type_name"));
+        billingDetailsDTO.setCheckInDate(resultSet.getString("check_in_date"));
+        billingDetailsDTO.setCheckOutDate(resultSet.getString("check_out_date"));
+        billingDetailsDTO.setAveragePrice(resultSet.getDouble("average_price"));
+        billingDetailsDTO.setSubTotal(resultSet.getDouble("sub_total"));
+        billingDetailsDTO.setTaxes(resultSet.getDouble("taxes"));
+        billingDetailsDTO.setVat(resultSet.getDouble("vat"));
+        billingDetailsDTO.setPackageTotal(resultSet.getDouble("package_total"));
+
+        billingDetailsDTO.setAdultCount(resultSet.getInt("adult_count"));
+        billingDetailsDTO.setTeenCount(resultSet.getInt("teen_count"));
+        billingDetailsDTO.setKidCount(resultSet.getInt("kid_count"));
+        billingDetailsDTO.setPromotionTitle(resultSet.getString("promotion_title"));
+        billingDetailsDTO.setPromotionDescription(resultSet.getString("promotion_description"));
+
+
         return billingDetailsDTO;
     }
 }

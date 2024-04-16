@@ -27,7 +27,7 @@ public class BillingDetailsService {
 
     private final BillingDetailsMapper billingDetailsMapper = new BillingDetailsMapper();
 
-    /**
+  
      * Adds billing details to the database.
      *
      * @param billingDetailsDTO The BillingDetailsDTO object containing billing details to be added.
@@ -36,13 +36,14 @@ public class BillingDetailsService {
      */
     public BillingDetailsDTO addDetails(BillingDetailsDTO billingDetailsDTO) throws SQLException {
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-            String insertQuery = BookingConstants.INSERT_CHECKOUT_DETAILS_QUERY;
+            String insertQuery = BookingConstants.INSERT_CHECKOUT_DETAILS_QUERY_ALT;
+
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
                 UUID billingId = UUID.randomUUID();
                 preparedStatement.setObject(1, billingId);
                 BillingDetailsUtil.setPreparedStatementParameters(preparedStatement, billingDetailsDTO);
-             
+
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected == 1) {
                     billingDetailsDTO.setBillingId(billingId);
@@ -54,6 +55,17 @@ public class BillingDetailsService {
         throw new SQLException("Failed to add data. No rows affected.");
     }
 
+    public BillingDetailsDTO getDetailsById(UUID billingId) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
+            String selectQuery = BookingConstants.GET_CHECKOUT_DETAILS_BY_ID_QUERY_ALT;
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+                preparedStatement.setObject(1, billingId);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return billingDetailsMapper.mapResultSetToBillingDetailsDTO(resultSet);
+
     /**
      * Retrieves billing details from the database by ID.
      *
@@ -61,26 +73,15 @@ public class BillingDetailsService {
      * @return The BillingDetailsDTO object containing the requested billing details if found, null otherwise.
      * @throws SQLException If a database access error occurs.
      */
-    public BillingDetailsDTO getDetailsById(UUID billingId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
-            String selectQuery = BookingConstants.GET_CHECKOUT_DETAILS_BY_ID_QUERY;
-    
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-                preparedStatement.setObject(1, billingId);
-    
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return billingDetailsMapper.mapResultSetToBillingDetailsDTO(resultSet);        
-                    }
-                }
-            }
-        }
+   
         return null;
     }
+
     
     public boolean deleteBillingDetailsByBillingId(String billingId) throws SQLException {
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
             String deleteQuery = "DELETE FROM billingdetails WHERE billing_id = ?";
+
             try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
                 preparedStatement.setObject(1, UUID.fromString(billingId));
                 int rowsAffected = preparedStatement.executeUpdate();

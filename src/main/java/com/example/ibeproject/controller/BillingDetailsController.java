@@ -42,12 +42,14 @@ public class BillingDetailsController {
         }
     }
 
+
     /**
      * Retrieves billing details by ID.
      *
      * @param billingId The unique identifier of the billing details to retrieve.
      * @return ResponseEntity containing the billing details or an error response.
      */
+
     @GetMapping(value = "/{billingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BillingDetailsDTO> getBillingDetailsById(@PathVariable UUID billingId) {
         try {
